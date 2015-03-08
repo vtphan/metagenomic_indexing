@@ -42,6 +42,7 @@ func ReadMatrix(input_file string, T hash) int {
    var line string
    var tokens []string
    var kmer, gid, freq int
+   exist_kmers := make(map[int]bool)
    max_gid := 0
    scanner := bufio.NewScanner(f)
    for scanner.Scan() {
@@ -52,6 +53,13 @@ func ReadMatrix(input_file string, T hash) int {
          if err != nil {
             panic("Trouble, trouble!!!")
          }
+         _, exist := exist_kmers[kmer]
+         if exist {
+            fmt.Println("Multiple entries for k-mer",kmer,"exist. This is not allowed.")
+            os.Exit(0)
+         }
+         exist_kmers[kmer] = true
+
          tokens = strings.Split(tokens[1]," ")
 
          // Get the entry for this kmer
@@ -77,7 +85,7 @@ func ReadMatrix(input_file string, T hash) int {
          // Make sure that genome ids in the k-mer's entry are sorted.
          sort.Sort(entry)
 
-         _, exist := T[entry.gids]
+         _, exist = T[entry.gids]
          if ! exist {
             T[entry.gids] = new(hashEntry)
             T[entry.gids].num_gids = entry.count
