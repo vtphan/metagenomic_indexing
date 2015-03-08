@@ -1,0 +1,8 @@
+# Format of each line: "kmer-id g1-id f1 g2-id f2 ..."
+# Example: "19 25 2 1 5" means k-mer 19 occurs in genome 25, 2 times and in genome 1, 5 times.
+# Comment lines (those starting with "#") are ignored.
+23 10 5
+14 1 10 3 4
+15 1 5 3 6
+9 0 2 1 5
+6 1 1 0 3
