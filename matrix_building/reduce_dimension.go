@@ -12,7 +12,8 @@ import (
 const Dim = 5
 type vector [Dim]int
 
-// assuming the v is not empty and is filled from left to right,
+// assume v is not empty.  Thus, size() is always greater than 0.
+// assume v is filled from left to right.
 func (v vector) size() int {
    // starting from 1 because the first element (0) might be 0
    for i:=1; i<len(v); i++ {
@@ -61,7 +62,7 @@ func ReadMatrix(input_file string, T hash) int {
          tokens = strings.SplitN(line," ",2)
          kmer, err = strconv.Atoi(tokens[0])
          if err != nil {
-            panic("Trouble, trouble!!!")
+            panic("Problem converting kmer!!!")
          }
          _, exist := exist_kmers[kmer]
          if exist {
