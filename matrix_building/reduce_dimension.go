@@ -12,11 +12,9 @@ import (
 const Dim = 5
 type vector [Dim]int
 
-// assume v is not empty.  Thus, size() is always greater than 0.
 // assume v is filled from left to right.
 func (v vector) size() int {
-   // starting from 1 because the first element (0) might be 0
-   for i:=1; i<len(v); i++ {
+   for i:=0; i<len(v); i++ {
       if v[i] == 0 {
          return i
       }
@@ -80,10 +78,17 @@ func ReadMatrix(input_file string, T hash) int {
             if err != nil {
                panic("Problem converting gid!!!")
             }
+            if gid <= 0 {
+               panic("Genome id must be a positive number.")
+            }
             freq, err = strconv.Atoi(tokens[i+1])
             if err != nil {
                panic("Problem converting freq!!!")
             }
+            if freq <= 0 {
+               panic("Frequency id must be a positive number.")
+            }
+
             entry.gids[i/2] = gid
             entry.freqs[i/2] = freq
 
@@ -132,8 +137,7 @@ func ReduceMatrix(T hash, max_gid int) {
 
       // save to file Matrix
       num_gids = gids.size()
-      fmt.Println("num_gids", gids, num_gids)
-      for i,j:=0,0; i<=max_gid; i++ {
+      for i,j:=1,0; i<=max_gid; i++ {
          if i!=gids[j] || j>=num_gids{
             fmt.Fprint(matrix_writer, 0)
          } else if i==gids[j] {
@@ -168,9 +172,9 @@ func main() {
    T := make(hash)
    max_gid := ReadMatrix(os.Args[1], T)
 
-   // for k, e := range(T) {
-   //    fmt.Println(k,e)
-   // }
+   for k, e := range(T) {
+      fmt.Println(k,e)
+   }
 
    ReduceMatrix(T, max_gid)
 }
