@@ -12,21 +12,31 @@ import (
 const Dim = 5
 type vector [Dim]int
 
+// assuming the v is not empty and is filled from left to right,
+func (v vector) size() int {
+   // starting from 1 because the first element (0) might be 0
+   for i:=1; i<len(v); i++ {
+      if v[i] == 0 {
+         return i
+      }
+   }
+   return len(v)
+}
+
 type hashEntry struct {
-   num_gids int
-   kmers []int
-   freqs []vector
+   kmers []int          // the kmers occuring in the same genomes.
+   freqs []vector       // the frequencies of kmers in each genome.
 }
 
 type hash map[vector]*hashEntry
 
 type kmerEntry struct {
-   count int
-   gids vector
-   freqs vector
+   gids vector          // the genomes this kmer occurs in.
+   freqs vector         // the frequencies of this kmer in the genomes.
 }
 
-func (e *kmerEntry) Len() int { return e.count }
+func (e *kmerEntry) Len() int { return e.freqs.size() }
+
 func (e *kmerEntry) Swap(i, j int) {
    e.gids[i], e.gids[j] = e.gids[j], e.gids[i]
    e.freqs[i], e.freqs[j] = e.freqs[j], e.freqs[i]
@@ -67,15 +77,14 @@ func ReadMatrix(input_file string, T hash) int {
          for i:=0; i<len(tokens); i+=2 {
             gid, err = strconv.Atoi(tokens[i])
             if err != nil {
-               panic("Trouble, trouble!!!")
+               panic("Problem converting gid!!!")
             }
             freq, err = strconv.Atoi(tokens[i+1])
             if err != nil {
-               panic("Trouble, trouble!!!")
+               panic("Problem converting freq!!!")
             }
             entry.gids[i/2] = gid
             entry.freqs[i/2] = freq
-            entry.count++
 
             if gid > max_gid {
                max_gid = gid
@@ -88,7 +97,6 @@ func ReadMatrix(input_file string, T hash) int {
          _, exist = T[entry.gids]
          if ! exist {
             T[entry.gids] = new(hashEntry)
-            T[entry.gids].num_gids = entry.count
          }
          T[entry.gids].kmers = append(T[entry.gids].kmers, kmer)
          T[entry.gids].freqs = append(T[entry.gids].freqs, entry.freqs)
@@ -109,7 +117,7 @@ func ReduceMatrix(T hash, max_gid int) {
    row_writer := bufio.NewWriter(row_file)
    matrix_writer := bufio.NewWriter(matrix_file)
 
-   var sum_freq int
+   var sum_freq, num_gids int
    for gids, e := range(T) {
       // save to file ColumnID
       for i:=0; i<len(e.kmers); i++ {
@@ -122,8 +130,10 @@ func ReduceMatrix(T hash, max_gid int) {
       }
 
       // save to file Matrix
+      num_gids = gids.size()
+      fmt.Println("num_gids", gids, num_gids)
       for i,j:=0,0; i<=max_gid; i++ {
-         if i!=gids[j] || j>=e.num_gids{
+         if i!=gids[j] || j>=num_gids{
             fmt.Fprint(matrix_writer, 0)
          } else if i==gids[j] {
             sum_freq = 0
