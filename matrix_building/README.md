@@ -1,4 +1,15 @@
 
+Selecting good kmers
+====================
+
+   Usage: go run kmers_selection.go genome_directory K
+
+genomes_dir : directory containing genomes in FASTA format.
+K : kmer length.  Should not be more than 16.
+
+Reducing dimensions
+===================
+
 	Usage: go run reduce_dimension.go input_file
 
 Format of each line in input_file: **kmer-id g1 f1 g2 f2** ...
