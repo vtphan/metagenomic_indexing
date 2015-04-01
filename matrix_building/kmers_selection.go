@@ -54,14 +54,14 @@ func CountUniqueKmers(dirname string, K int) ([]int, int) {
 
    wg.Add(len(files))
    for idx, f := range(files) {
-      fmt.Println("processing", f.Name())
-      file, err := os.Open(path.Join(dirname, f.Name()))
-      defer file.Close()
-      error_check(err)
-      go func(gid int) {
+      go func(gid int, cur_file os.FileInfo) {
+         fmt.Println("processing", cur_file.Name())
+         file, err := os.Open(path.Join(dirname, cur_file.Name()))
+         defer file.Close()
+         defer wg.Done()
+         error_check(err)
          countFASTA(file, gid, K, occ, lock)
-         wg.Done()
-      }(idx+1)
+      }(idx+1, f)
    }
    wg.Wait()
    return occ, len(files)
