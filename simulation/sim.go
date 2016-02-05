@@ -7,22 +7,22 @@ import (
 )
 
 /*
-	Goal: generate a random partition of a given population.
+	Goal: divide M things non-uniformly randomly to population
 	OUTPUT is []int of length population
 	OUTPUT[i] is a random int between 0 and N-1
-	sum of all OUTPUT[i] = population
+	sum of all OUTPUT[i] = M
 */
-func Partition(population int, cakes int, N int) []int {
+func Partition(population int, M int, N int) []int {
 	rand.Seed(time.Now().UTC().UnixNano())
 	perm := rand.Perm(population)
 	pop := make([]int, population)
 	for i := 0; i < len(perm); i++ {
 		pop[perm[i]] = rand.Intn(N)
-		if pop[perm[i]] >= cakes {
-			pop[perm[i]] = cakes
+		if pop[perm[i]] >= M {
+			pop[perm[i]] = M
 			break
 		}
-		cakes -= pop[perm[i]]
+		M -= pop[perm[i]]
 	}
 	return pop
 }
