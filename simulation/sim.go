@@ -8,7 +8,7 @@ import (
 
 /*
 	Goal: generate a random partition of a given population.
-	OUTPUT is []int of size population
+	OUTPUT is []int of length population
 	OUTPUT[i] is a random int between 0 and N-1
 	sum of all OUTPUT[i] = population
 */
