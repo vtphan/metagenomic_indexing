@@ -32,8 +32,13 @@ func main() {
 	i := 0
 	tp, fp, fn := 0, 0, 0
 	var read1, read2 []byte
-	var cur_genome string
+	var cur_genome int
 	var header string
+
+	gid := make(map[string]int)
+	for i := 0; i < len(idx.GENOME_ID); i++ {
+		gid[idx.GENOME_ID[i]] = i
+	}
 
 	fmt.Println("querying reads...")
 	for {
@@ -44,31 +49,24 @@ func main() {
 		if len(line) > 1 {
 			if i%4 == 0 {
 				header = string(bytes.TrimSpace(line))
-				cur_genome = re.FindString(header)[10:]
+				cur_genome = gid[re.FindString(header)[10:]]
 			}
 
 			if i%4 == 1 {
 				read1 = bytes.TrimSpace(line)
 			} else if i%4 == 3 {
 				read2 = bytes.TrimSpace(line)
+				// fmt.Println("\n\n", cur_genome, header)
+				seqs := idx.FindGenome(read1, reverse_complement(read2), 100, 1500)
 
-				// fmt.Println("\n\n", header)
-				// fmt.Println("CORRECT GENOME ID:", genome_id[cur_genome])
-				// randomized
-				seq := idx.GuessPair(read1, reverse_complement(read2), 100, 1500)
-
-				// deterministic
-				// seq := idx.GuessPairD(read1, reverse_complement(read2))
-
-				if seq == -1 {
-					fn++
-					// fmt.Println("FALSE NEGATIVE")
+				if _, ok := seqs[cur_genome]; ok {
+					tp++
+					fp += len(seqs) - 1
+					// fmt.Println("Positive", seqs)
 				} else {
-					if idx.GENOME_ID[seq] == cur_genome {
-						tp++
-					} else {
-						fp++
-					}
+					fn++
+					// fmt.Println("\n\n", cur_genome, header)
+					// fmt.Println("False Negative", seqs)
 				}
 			}
 		}

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"bufio"
 	"bytes"
+	"fmt"
+	"os"
+	"regexp"
 )
 
 //-----------------------------------------------------------------------------
@@ -14,10 +15,18 @@ func main() {
 	r := bufio.NewReader(f)
 	i := 0
 	var read1, read2 []byte
+	re := regexp.MustCompile(`SOURCE_1="[^"]+`)
 	for {
 		line, err := r.ReadBytes('\n')
-		if err != nil { break }
+		if err != nil {
+			break
+		}
 		if len(line) > 1 {
+			if i%4 == 0 {
+				header := string(bytes.TrimSpace(line))
+				fmt.Println("HEADER:", header)
+				fmt.Println(re.FindString(header)[10:])
+			}
 			if i%4 == 1 {
 				read1 = bytes.TrimSpace(line)
 			} else if i%4 == 3 {
@@ -32,7 +41,7 @@ func main() {
 
 func reverse_complement(s []byte) []byte {
 	rs := make([]byte, len(s))
-	for i:=0; i<len(s); i++ {
+	for i := 0; i < len(s); i++ {
 		if s[i] == 'A' {
 			rs[len(s)-i-1] = 'T'
 		} else if s[i] == 'T' {
