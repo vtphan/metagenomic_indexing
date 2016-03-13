@@ -57,16 +57,17 @@ func main() {
 			} else if i%4 == 3 {
 				read2 = bytes.TrimSpace(line)
 				// fmt.Println("\n\n", cur_genome, header)
-				seqs := idx.FindGenome(read1, reverse_complement(read2), 100, 1500)
-
+				// seqs := idx.FindGenomeD(read1, reverse_complement(read2), 1500)
+				seqs := idx.FindGenomeR(read1, reverse_complement(read2), 1500, 100)
 				if _, ok := seqs[cur_genome]; ok {
 					tp++
 					fp += len(seqs) - 1
+					// fmt.Println(cur_genome, seqs)
 					// fmt.Println("Positive", seqs)
 				} else {
 					fn++
 					// fmt.Println("\n\n", cur_genome, header)
-					// fmt.Println("False Negative", seqs)
+					fmt.Println("False Negative", cur_genome, seqs)
 				}
 			}
 		}
